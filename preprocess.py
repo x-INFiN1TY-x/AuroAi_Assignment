@@ -1,12 +1,29 @@
-import spacy
+import torch
+from transformers import AutoTokenizer, AutoModel
+from gensim.models import Doc2Vec
+from gensim.models.doc2vec import TaggedDocument
+from sklearn.metrics.pairwise import cosine_similarity
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 
-nlp = spacy.load('en_core_web_sm')
+nltk.download("punkt")
+nltk.download("wordnet")
+nltk.download("stopwords")
+
 
 def preprocess_text(texts):
+    lemmatizer = WordNetLemmatizer()
+    stop_words = set(stopwords.words("english"))
     processed_texts = []
     for text in texts:
         if text:
-            doc = nlp(text)
-            tokens = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
-            processed_texts.append(' '.join(tokens))
+            tokens = word_tokenize(text.lower())
+            tokens = [
+                lemmatizer.lemmatize(token)
+                for token in tokens
+                if token.isalpha() and token not in stop_words
+            ]
+            processed_texts.append(" ".join(tokens))
     return processed_texts
