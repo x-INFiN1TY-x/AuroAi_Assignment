@@ -1,0 +1,7 @@
+streamlit
+spacy
+torch
+transformers
+gensim
+scikit-learn
+pdfminer.six
