@@ -43,29 +43,44 @@ def process_pdf(uploaded_file, topics):
         pdf_text = extract_text_from_pdf(uploaded_file)
         paragraphs = segment_text(pdf_text)
 
-        bert_matches, doc2vec_matches = match_topics(paragraphs, topics)
+        bert_similarities, doc2vec_similarities = match_topics(paragraphs, topics)
 
         st.session_state.results = {
             "paragraphs": paragraphs,
             "topics": topics,
-            "bert_matches": bert_matches,
-            "doc2vec_matches": doc2vec_matches,
+            "bert_similarities": bert_similarities,
+            "doc2vec_similarities": doc2vec_similarities,
         }
 
 
 def display_results(results):
     paragraphs = results["paragraphs"]
-    bert_matches = results["bert_matches"]
-    doc2vec_matches = results["doc2vec_matches"]
+    topics = results["topics"]
+    bert_similarities = results["bert_similarities"]
+    doc2vec_similarities = results["doc2vec_similarities"]
 
     for i, paragraph in enumerate(paragraphs):
         with st.expander(f"Paragraph {i+1}"):
             st.write(paragraph)
             col1, col2 = st.columns(2)
+
             with col1:
-                st.markdown(f"**BERT Match:** {bert_matches[i]}")
+                st.markdown("### BERT Similarities")
+                for topic, score in zip(topics, bert_similarities[i]):
+                    st.markdown(f"**{topic}:** {score:.4f}")
+
+                bert_best_match_index = bert_similarities[i].argmax()
+                st.markdown(f"**BERT Best Match:** {topics[bert_best_match_index]}")
+
             with col2:
-                st.markdown(f"**Doc2Vec Match:** {doc2vec_matches[i]}")
+                st.markdown("### Doc2Vec Similarities")
+                for topic, score in zip(topics, doc2vec_similarities[i]):
+                    st.markdown(f"**{topic}:** {score:.4f}")
+
+                doc2vec_best_match_index = doc2vec_similarities[i].argmax()
+                st.markdown(
+                    f"**Doc2Vec Best Match:** {topics[doc2vec_best_match_index]}"
+                )
 
 
 if __name__ == "__main__":

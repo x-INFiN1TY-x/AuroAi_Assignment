@@ -65,14 +65,4 @@ def match_topics(paragraphs, topics):
         doc2vec_paragraph_embeddings, doc2vec_topic_embeddings
     )
 
-    bert_matches = []
-    doc2vec_matches = []
-    for bert_similarity_row, doc2vec_similarity_row in zip(
-        bert_similarities, doc2vec_similarities
-    ):
-        bert_best_match_index = bert_similarity_row.argmax()
-        doc2vec_best_match_index = doc2vec_similarity_row.argmax()
-        bert_matches.append(topics[bert_best_match_index])
-        doc2vec_matches.append(topics[doc2vec_best_match_index])
-
-    return bert_matches, doc2vec_matches
+    return bert_similarities, doc2vec_similarities
