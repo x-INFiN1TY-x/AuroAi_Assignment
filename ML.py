@@ -5,7 +5,6 @@ from gensim.models.doc2vec import TaggedDocument
 from sklearn.metrics.pairwise import cosine_similarity
 from preprocess import preprocess_text
 
-# BERT-based Embeddings
 tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 model = AutoModel.from_pretrained("roberta-base")
 
@@ -27,7 +26,6 @@ def encode_text(texts, batch_size=8):
     return all_embeddings
 
 
-# Doc2Vec Embeddings
 def train_doc2vec_model(paragraphs, topics):
     processed_docs = preprocess_text(paragraphs + topics)
     documents = [
@@ -44,25 +42,20 @@ def infer_doc2vec_embeddings(model, texts):
     return [model.infer_vector(text.split()) for text in processed_texts]
 
 
-# Calculate Cosine Similarity
 def calculate_similarities(paragraph_embeddings, topic_embeddings):
     return cosine_similarity(paragraph_embeddings, topic_embeddings)
 
 
-# Match topics using both methods
 def match_topics(paragraphs, topics):
-    # Preprocess
     processed_paragraphs = preprocess_text(paragraphs)
     processed_topics = preprocess_text(topics)
 
-    # BERT embeddings
     bert_paragraph_embeddings = encode_text(processed_paragraphs)
     bert_topic_embeddings = encode_text(processed_topics)
     bert_similarities = calculate_similarities(
         bert_paragraph_embeddings, bert_topic_embeddings
     )
 
-    # Doc2Vec embeddings
     doc2vec_model = train_doc2vec_model(paragraphs, topics)
     doc2vec_paragraph_embeddings = infer_doc2vec_embeddings(
         doc2vec_model, processed_paragraphs
@@ -72,7 +65,6 @@ def match_topics(paragraphs, topics):
         doc2vec_paragraph_embeddings, doc2vec_topic_embeddings
     )
 
-    # Get best matches for each method
     bert_matches = []
     doc2vec_matches = []
     for bert_similarity_row, doc2vec_similarity_row in zip(
@@ -84,7 +76,3 @@ def match_topics(paragraphs, topics):
         doc2vec_matches.append(topics[doc2vec_best_match_index])
 
     return bert_matches, doc2vec_matches
-
-
-# Usage
-# bert_matches, doc2vec_matches = match_topics(paragraphs, topics)

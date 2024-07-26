@@ -6,6 +6,7 @@ from ML import (
     train_doc2vec_model,
     infer_doc2vec_embeddings,
     calculate_similarities,
+    match_topics,
 )
 
 
